@@ -2,7 +2,11 @@
   description = "An empty flake template that you can adapt to your own environment";
 
   # Flake inputs
-  inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0"; # Stable Nixpkgs
+  inputs = {
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0"; # Stable Nixpkgs
+    fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz"; # FlakeHub
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*"; # Determinate Flakes
+  };
 
   # Flake outputs
   outputs = {
@@ -36,6 +40,7 @@
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
+        inputs.determinate.nixosModules.default
         {
           # Basic hostname
           networking.hostName = "cohnesorge-mixos";
@@ -93,6 +98,7 @@
             openssl
             gh
             lua-language-server
+            inputs.fh.packages.${system}.fh
           ];
 
           # Bootloader (for ARM boards you may need to tweak)
