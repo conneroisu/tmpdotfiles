@@ -48,7 +48,7 @@
           # Enable SSH
           services.openssh.enable = true;
 
-          virtualisation.vmware.enable = true;
+          virtualisation.vmware.host.enable = true;
 
           users.users.conner = {
             isNormalUser = true;
