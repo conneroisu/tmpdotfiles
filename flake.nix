@@ -43,7 +43,7 @@
         inputs.determinate.nixosModules.default
         {
           # Basic hostname
-          networking.hostName = "cohnesorge-mixos";
+          networking.hostName = "mixos";
 
           # Enable SSH
           services.openssh.enable = true;
@@ -54,6 +54,8 @@
             isNormalUser = true;
             extraGroups = ["wheel"]; # sudo access
             password = "changeme"; # set via `passwd` after first login
+
+            shell = nixpkgs.legacyPackages.${system}.zsh;
           };
 
           # Allow sudo without password for wheel
@@ -106,7 +108,12 @@
           boot.loader.efi.canTouchEfiVariables = true;
 
           # Required for flakes
-          nix.settings.experimental-features = ["nix-command" "flakes"];
+          nix.settings = {
+            lazy-trees = true;
+            experimental-features = ["nix-command" "flakes"];
+            trusted-users = ["root" "connerohnesorge" "@wheel"];
+            allowed-users = ["@wheel" "@builders" "connerohnesorge" "root"];
+          };
         }
       ];
     };
