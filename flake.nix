@@ -45,6 +45,8 @@
           # Basic hostname
           networking.hostName = "mixos";
 
+          fonts.packages = with nixpkgs.legacyPackages.${system}; [dejavu_fonts noto-fonts];
+
           # Enable SSH
           services.openssh.enable = true;
 
