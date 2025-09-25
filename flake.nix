@@ -6,12 +6,17 @@
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0"; # Stable Nixpkgs
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz"; # FlakeHub
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*"; # Determinate Flakes
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Flake outputs
   outputs = {
     self,
     nixpkgs,
+    disko,
     ...
   } @ inputs: let
     # The systems supported for this flake's outputs
@@ -41,6 +46,8 @@
       inherit system;
       modules = [
         inputs.determinate.nixosModules.default
+        inputs.disko.nixosModules.disko
+        ./disko-config.nix
         {
           # Basic hostname
           networking.hostName = "mixos";
@@ -50,7 +57,20 @@
           # Enable SSH
           services.openssh.enable = true;
 
-          virtualisation.vmware.host.enable = true;
+          # X11 and Display Manager
+          services.xserver = {
+            enable = true;
+            windowManager.dwm.enable = true;
+          };
+
+          # ly display manager
+          services.displayManager.ly.enable = true;
+
+          # VMware guest optimizations for M1 Mac
+          virtualisation.vmware.guest.enable = true;
+
+          # Hardware acceleration and graphics
+          hardware.graphics.enable = true;
 
           users.users.conner = {
             isNormalUser = true;
@@ -104,6 +124,17 @@
             gh
             lua-language-server
             inputs.fh.packages.${system}.fh
+            # X11 and desktop utilities
+            xorg.xrandr
+            xorg.xsetroot
+            dmenu
+            st
+            firefox
+            alacritty
+            feh
+            rofi
+            # VMware tools
+            open-vm-tools
           ];
 
           # Bootloader (for ARM boards you may need to tweak)
@@ -117,6 +148,9 @@
             trusted-users = ["root" "connerohnesorge" "@wheel"];
             allowed-users = ["@wheel" "@builders" "connerohnesorge" "root"];
           };
+
+          # System state version
+          system.stateVersion = "25.05";
         }
       ];
     };
