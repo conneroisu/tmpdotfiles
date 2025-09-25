@@ -52,6 +52,11 @@
           # Basic hostname
           networking.hostName = "mixos";
 
+          nixpkgs.config = {
+            allowUnfree = true;
+            allowUnsupportedSystem = true;
+          };
+
           fonts.packages = with nixpkgs.legacyPackages.${system}; [dejavu_fonts noto-fonts];
 
           # Enable SSH
@@ -80,6 +85,7 @@
             shell = nixpkgs.legacyPackages.${system}.zsh;
           };
 
+          networking.interfaces.ens160.useDHCP = true;
           # Allow sudo without password for wheel
           security.sudo.wheelNeedsPassword = false;
 
